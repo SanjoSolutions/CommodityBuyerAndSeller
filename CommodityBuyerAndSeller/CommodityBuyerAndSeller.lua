@@ -47,7 +47,7 @@ end
 --- @param itemIdentifier string | number An item identifier. Can be an item name or item link. If it's an item name, it seems required that the item was in the bags in the session.
 --- @return number The item ID.
 function CommodityBuyerAndSeller.retrieveItemID(itemIdentifier)
-	local itemID = GetItemInfoInstant(itemIdentifier)
+  local itemID = GetItemInfoInstant(itemIdentifier)
   return itemID
 end
 
@@ -320,7 +320,7 @@ function _.workThroughSellTasks()
       local duration = 1
       -- TODO: Does it work if the item is distributed over multiple slots?
       local itemLink = C_Item.GetItemLink(item)
-      print('Trying to put in '  .. quantity .. ' x ' .. itemLink .. ' (each for ' .. GetMoneyString(unitPrice) .. ').')
+      print('Trying to put in ' .. quantity .. ' x ' .. itemLink .. ' (each for ' .. GetMoneyString(unitPrice) .. ').')
       _.showConfirmButton()
       local requiresConfirmation = C_AuctionHouse.PostCommodity(item, duration, quantity, unitPrice)
       if requiresConfirmation then
@@ -347,11 +347,11 @@ confirmButton:Hide()
 function _.showConfirmButton()
   confirmButton:Show()
   local thread = coroutine.running()
-  confirmButton:SetScript('OnClick', function ()
+  confirmButton:SetScript('OnClick', function()
     confirmButton:Hide()
     Coroutine.resumeWithShowingError(thread)
   end)
-	coroutine.yield()
+  coroutine.yield()
 end
 
 function _.workThroughPurchaseTasks()
@@ -361,6 +361,9 @@ function _.workThroughPurchaseTasks()
     local quantity = purchaseTask.quantity
     local maximumUnitPriceToBuyFor = purchaseTask.maximumUnitPriceToBuyFor
 
+    _.loadItem(itemID)
+    local itemLink = select(2, GetItemInfo(itemID))
+    print('Trying to buy ' .. quantity .. ' x ' .. itemLink .. ' (for a maximum unit price of ' .. GetMoneyString(maximumUnitPriceToBuyFor) .. ').')
     _.showConfirmButton()
     C_AuctionHouse.StartCommoditiesPurchase(itemID, quantity)
     local wasSuccessful, event, unitPrice, totalPrice = Events.waitForOneOfEvents({ 'COMMODITY_PRICE_UPDATED', 'COMMODITY_PRICE_UNAVAILABLE' },
@@ -368,8 +371,24 @@ function _.workThroughPurchaseTasks()
     if event == 'COMMODITY_PRICE_UPDATED' then
       if unitPrice <= maximumUnitPriceToBuyFor then
         C_AuctionHouse.ConfirmCommoditiesPurchase(itemID, quantity)
-        Events.waitForOneOfEvents({ 'COMMODITY_PURCHASE_SUCCEEDED', 'COMMODITY_PURCHASE_FAILED' }, 3)
+        local wasSuccessful, event = Events.waitForOneOfEvents({ 'COMMODITY_PURCHASE_SUCCEEDED', 'COMMODITY_PURCHASE_FAILED' }, 3)
+        if wasSuccessful and event == 'COMMODITY_PURCHASE_SUCCEEDED' then
+          print('Have bought ' .. quantity .. ' x ' .. itemLink .. ' (for a unit price of ' .. GetMoneyString(unitPrice) .. ').')
+        end
       end
     end
+  end
+end
+
+function _.loadItem(itemID)
+  local item = Item:CreateFromItemID(itemID)
+  if not item:IsItemDataCached() then
+    local thread = coroutine.running()
+
+    item:ContinueOnItemLoad(function()
+      Coroutine.resumeWithShowingError(thread)
+    end)
+
+    coroutine.yield()
   end
 end
