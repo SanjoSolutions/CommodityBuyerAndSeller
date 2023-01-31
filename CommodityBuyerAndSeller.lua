@@ -9,6 +9,12 @@ local remainingQuantitiesToSell = {}
 local sellTasks = {}
 local purchaseTasks = {}
 
+--- Adds a buy and sell task for an item.
+--- @param itemID number The item ID.
+--- @param maximumUnitPriceToBuyFor number The maximum unit price to buy for in gold.
+--- @param maximumTotalQuantityToPutIntoAuctionHouse number The maximum total quantity to put into the auction house.
+--- @param maximumQuantityToPutIntoAuctionHouseAtATime number The maximum quantity to put into the auction house at a time.
+--- @param minimumSellPricePerUnit number The minimum sell price per unit.
 function CommodityBuyerAndSeller.buyAndSell(itemID, maximumUnitPriceToBuyFor, maximumTotalQuantityToPutIntoAuctionHouse,
   maximumQuantityToPutIntoAuctionHouseAtATime, minimumSellPricePerUnit)
   _.setBuyTask(itemID, maximumTotalQuantityToPutIntoAuctionHouse, maximumQuantityToPutIntoAuctionHouseAtATime,
@@ -17,11 +23,19 @@ function CommodityBuyerAndSeller.buyAndSell(itemID, maximumUnitPriceToBuyFor, ma
   _.runLoop()
 end
 
+--- Adds a buy task for an item.
+--- @param itemID number The item ID.
+--- @param maximumUnitPriceToBuyFor number The maximum unit price to buy for in gold.
 function CommodityBuyerAndSeller.buy(itemID, maximumUnitPriceToBuyFor)
   _.setSellTask(itemID, maximumUnitPriceToBuyFor)
   _.runLoop()
 end
 
+--- Adds a sell task for an item.
+--- @param itemID number The item ID.
+--- @param maximumTotalQuantityToPutIntoAuctionHouse number The maximum total quantity to put into the auction house.
+--- @param maximumQuantityToPutIntoAuctionHouseAtATime number The maximum quantity to put into the auction house at a time.
+--- @param minimumSellPricePerUnit number The minimum sell price per unit.
 function CommodityBuyerAndSeller.sell(itemID, maximumTotalQuantityToPutIntoAuctionHouse,
   maximumQuantityToPutIntoAuctionHouseAtATime, minimumSellPricePerUnit)
   _.setBuyTask(itemID, maximumTotalQuantityToPutIntoAuctionHouse, maximumQuantityToPutIntoAuctionHouseAtATime,
@@ -29,6 +43,9 @@ function CommodityBuyerAndSeller.sell(itemID, maximumTotalQuantityToPutIntoAucti
   _.runLoop()
 end
 
+--- Returns the item ID of an item.
+--- @param itemIdentifier string | number An item identifier. Can be an item name or item link. If it's an item name, it seems required that the item was in the bags in the session.
+--- @return number The item ID.
 function CommodityBuyerAndSeller.retrieveItemID(itemIdentifier)
 	local itemID = GetItemInfoInstant(itemIdentifier)
   return itemID
@@ -109,6 +126,8 @@ end
 
 function _.setBuyTask(itemID, maximumTotalQuantityToPutIntoAuctionHouse, maximumQuantityToPutIntoAuctionHouseAtATime,
   minimumSellPricePerUnit)
+  minimumSellPricePerUnit = minimumSellPricePerUnit * 10000
+
   if not remainingQuantitiesToSell[itemID] then
     remainingQuantitiesToSell[itemID] = 0
   end
@@ -128,7 +147,7 @@ function _.setSellTask(itemID, maximumUnitPriceToBuyFor)
   local task = {
     type = 'buy',
     itemID = itemID,
-    maximumUnitPriceToBuyFor = maximumUnitPriceToBuyFor
+    maximumUnitPriceToBuyFor = maximumUnitPriceToBuyFor * 10000
   }
   _.setTask(task)
 end
