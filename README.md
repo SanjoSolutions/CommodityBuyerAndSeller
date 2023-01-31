@@ -12,6 +12,8 @@ What to buy and sell and with what parameters can be configured. After starting 
 confirm posts and purchases by clicking a "Confirm" button that appears at the center of the viewport when a "Confirm"
 action is required.
 
+It's also possible to bind a key and press the key instead of clicking the button.
+
 ## How to use
 
 ### Installation

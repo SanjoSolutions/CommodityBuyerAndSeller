@@ -1,4 +1,7 @@
 CommodityBuyerAndSeller = {}
+
+BINDING_NAME_COMMODITY_BUYER_AND_SELLER_CONFIRM_BUTTON = 'Commodity Buyer and Seller: Confirm'
+
 local _ = {}
 
 local INFINITY = 1 / 0
@@ -58,6 +61,19 @@ end
 function CommodityBuyerAndSeller.retrieveItemID(itemIdentifier)
   local itemID = GetItemInfoInstant(itemIdentifier)
   return itemID
+end
+
+CommodityBuyerAndSeller.thread = nil
+
+local confirmButton
+
+function CommodityBuyerAndSeller.confirm()
+  confirmButton:Hide()
+  if CommodityBuyerAndSeller.thread then
+    local thread = CommodityBuyerAndSeller.thread
+    CommodityBuyerAndSeller.thread = nil
+    Coroutine.resumeWithShowingError(thread)
+  end
 end
 
 local sorts = {
@@ -342,19 +358,18 @@ function _.workThroughSellTasks()
   end
 end
 
-local confirmButton = CreateFrame('Button', nil, UIParent, 'UIPanelButtonTemplate')
+confirmButton = CreateFrame('Button', nil, UIParent, 'UIPanelButtonTemplate')
 confirmButton:SetSize(144, 48)
 confirmButton:SetText('Confirm')
 confirmButton:SetPoint('CENTER', 0, 0)
+confirmButton:SetScript('OnClick', function()
+  CommodityBuyerAndSeller.confirm()
+end)
 confirmButton:Hide()
 
 function _.showConfirmButton()
   confirmButton:Show()
-  local thread = coroutine.running()
-  confirmButton:SetScript('OnClick', function()
-    confirmButton:Hide()
-    Coroutine.resumeWithShowingError(thread)
-  end)
+  CommodityBuyerAndSeller.thread = coroutine.running()
   coroutine.yield()
 end
 
@@ -375,7 +390,8 @@ function _.workThroughPurchaseTasks()
     if event == 'COMMODITY_PRICE_UPDATED' then
       if unitPrice <= maximumUnitPriceToBuyFor then
         C_AuctionHouse.ConfirmCommoditiesPurchase(itemID, quantity)
-        local wasSuccessful, event = Events.waitForOneOfEvents({ 'COMMODITY_PURCHASE_SUCCEEDED', 'COMMODITY_PURCHASE_FAILED' }, 3)
+        local wasSuccessful, event = Events.waitForOneOfEvents({ 'COMMODITY_PURCHASE_SUCCEEDED', 'COMMODITY_PURCHASE_FAILED' },
+          3)
         if wasSuccessful and event == 'COMMODITY_PURCHASE_SUCCEEDED' then
           print('Have bought ' .. quantity .. ' x ' .. itemLink .. ' (for a unit price of ' .. GetMoneyString(unitPrice) .. ').')
         end

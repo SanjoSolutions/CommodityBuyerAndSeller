@@ -39,6 +39,7 @@ const addOnsToCopy = [
   'CommoditiesBuyerAndSellerData',
   'TradeSkillMaster',
   'TradeSkillMaster_AppHelper',
+  '!Swatter'
 ]
 
 for (const addOnName of addOnsToCopy) {
@@ -48,3 +49,10 @@ for (const addOnName of addOnsToCopy) {
     'dir',
   )
 }
+
+await fs.rm(`${ buildDirectory }/${ addOnName }`, { recursive: true })
+await fs.symlink(
+  `../${addOnName}`,
+  `${ buildDirectory }/${ addOnName }`,
+  'dir',
+)
