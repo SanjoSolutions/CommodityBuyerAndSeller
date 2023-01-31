@@ -6,6 +6,7 @@
 * Selling commodities.
   * Putting only a maximum amount per commodity into the auction house at a time.
   * Putting more of a commodity into the auction house, so that one of your auctions is on top of the list (first purchased).
+* Cancelling auctions that are estimated to run out (works when on auctions tab and requires TradeSkillMaster as data source).
 
 What to buy and sell and with what parameters can be configured. After starting the process it's only required to
 confirm posts and purchases by clicking a "Confirm" button that appears at the center of the viewport when a "Confirm"
