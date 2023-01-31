@@ -26,6 +26,8 @@ for (let index = 0; index < dependenciesToCopy.length; index++) {
 }
 
 await fs.cp(addOnName, `${buildDirectory}/${addOnName}`, {recursive: true})
+await fs.cp('LICENSE', `${buildDirectory}/${addOnName}/LICENSE`)
+await fs.cp('README.md', `${buildDirectory}/${addOnName}/README.md`)
 
 const outputFileName = 'build.zip'
 await fs.rm(outputFileName, {force: true})
