@@ -34,3 +34,5 @@ await fs.rm(outputFileName, {force: true})
 child_process.execSync(`7z a -tzip ../${outputFileName} *`, {
   cwd: buildDirectory
 })
+
+await fs.cp('E:/Users/jonas/Documents/World of Warcraft/_retail_/Interface/AddOns/CommoditiesBuyerAndSellerData', `${buildDirectory}/CommoditiesBuyerAndSellerData`, {recursive: true})
