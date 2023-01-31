@@ -21,11 +21,11 @@ Download the [latest release](https://github.com/SanjoSolutions/CommodityBuyerAn
 
 What is bought and sold can be configured by calling APIs with an additional add-on that the user can provide.
 
-You can download a template for such add-on [here](https://github.com/SanjoSolutions/CommoditiesBuyerAndSellerData.git).
+You can download a template for such add-on [here](https://github.com/SanjoSolutions/CommodityBuyerAndSellerData.git).
 
-In line 4 of [CommoditiesBuyerAndSellerData.lua](https://github.com/SanjoSolutions/CommoditiesBuyerAndSellerData/blob/6374660b94b7e47b5ca2ef263779c4782a197c91/CommoditiesBuyerAndSellerData.lua), you can add API calls.
+In line 4 of [CommoditiesBuyerAndSellerData.lua](https://github.com/SanjoSolutions/CommodityBuyerAndSellerData/blob/b2281afd256ae4b02b03ae00def7da82890de2c5/CommodityBuyerAndSellerData.lua), you can add API calls.
 
-The APIs that are available can be found in [CommodityBuyerAndSeller.lua](https://github.com/SanjoSolutions/CommodityBuyerAndSeller/blob/main/CommodityBuyerAndSeller.lua).
+The APIs that are available can be found in [CommodityBuyerAndSeller.lua](https://github.com/SanjoSolutions/CommodityBuyerAndSeller/blob/main/CommodityBuyerAndSeller/CommodityBuyerAndSeller.lua).
 
 ### Starting the process
 
