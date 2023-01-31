@@ -2,5 +2,6 @@
 ## Version: 1.0.0
 ## Interface: 100005
 ## Dependencies: Events, Coroutine, Bags, Array
+## OptionalDependencies: TradeSkillMaster
 
 CommodityBuyerAndSeller.lua

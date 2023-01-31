@@ -111,6 +111,10 @@ function _.cancelAuctions()
           if result.containsOwnerItem then
             local estimatedAmountThatSellsUntilTheAuctionRunsOut = amountSoldPerDay * (result.timeLeftSeconds / (24 * 60 * 60))
             if quantity > estimatedAmountThatSellsUntilTheAuctionRunsOut then
+              _.loadItem(result.itemID)
+              local itemLink = select(2, GetItemInfo(result.itemID))
+              print('Cancelling ' .. result.numOwnerItems .. ' x ' .. itemLink .. '.')
+              _.showConfirmButton()
               C_AuctionHouse.CancelAuction(result.auctionID)
               Events.waitForEventCondition('AUCTION_CANCELED', function(self, event, auctionID)
                 return auctionID == result.auctionID
