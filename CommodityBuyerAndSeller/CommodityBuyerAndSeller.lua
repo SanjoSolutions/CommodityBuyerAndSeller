@@ -43,6 +43,15 @@ function CommodityBuyerAndSeller.sell(itemID, maximumTotalQuantityToPutIntoAucti
   _.runLoop()
 end
 
+--- Cancel auctions which are estimated to run out.
+function CommodityBuyerAndSeller.cancelAuctions()
+  Coroutine.runAsCoroutineImmediately(function()
+    _.cancelAuctions()
+
+    print('Auctions have been cancelled.')
+  end)
+end
+
 --- Returns the item ID of an item.
 --- @param itemIdentifier string | number An item identifier. Can be an item name or item link. If it's an item name, it seems required that the item was in the bags in the session.
 --- @return number The item ID.
@@ -57,14 +66,6 @@ local sorts = {
     reverseSort = false
   }
 }
-
-function CommodityBuyerAndSeller.cancelAuctions()
-  Coroutine.runAsCoroutineImmediately(function()
-    _.cancelAuctions()
-
-    print('Auctions have been cancelled.')
-  end)
-end
 
 function _.cancelAuctions()
   local auctions = C_AuctionHouse.GetOwnedAuctions()
