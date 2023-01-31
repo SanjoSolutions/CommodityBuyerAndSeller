@@ -243,7 +243,6 @@ function _.runLoop()
                 local quantityAlreadyOnTopInAuctionHouse = _.determineQuantityAlreadyOnTopInAuctionHouse(sellTask)
                 _.queueSellTaskAndWorkThroughSellTasks(sellTask, unitPrice, quantityAlreadyOnTopInAuctionHouse)
                 if remainingQuantitiesToSell[itemID] == 0 or not Bags.hasItem(itemID) then
-                  print('removing sell task', remainingQuantitiesToSell[itemID] == 0, not Bags.hasItem(itemID))
                   tasks[itemID].sell = nil
                 end
               end
