@@ -1,6 +1,6 @@
 [submodule "unnamed"]
 	path = unnamed
-	url = https://github.com/SanjoSolutions/unnamed.git
+	url = git@github.com:SanjoSolutions/unnamed.git
 [submodule "AddOns"]
 	path = AddOns
-	url = https://github.com/SanjoSolutions/AddOns.git
+	url = git@github.com:SanjoSolutions/AddOns.git

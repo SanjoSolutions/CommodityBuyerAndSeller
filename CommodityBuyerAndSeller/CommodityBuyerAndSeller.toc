@@ -1,5 +1,6 @@
 ## Title: Commodity Buyer And Seller
-## Interface: 100002
+## Version: 1.0.0
+## Interface: 100005
 ## Dependencies: Events, Coroutine, Bags, Array
 
 CommodityBuyerAndSeller.lua
