@@ -208,7 +208,7 @@ function _.runLoop()
     end)
 
     Coroutine.runAsCoroutineImmediately(function()
-      while isAuctionHouseOpen and Object.hasEntries(tasks) do
+      while isAuctionHouseOpen do
         for itemID, __ in pairs(tasks) do
           local itemKey = { itemID = itemID }
           C_AuctionHouse.SendSearchQuery(
