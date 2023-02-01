@@ -207,7 +207,7 @@ function _.runLoop()
       isAuctionHouseOpen = false
     end)
 
-    Coroutine.runAsCoroutine(function()
+    Coroutine.runAsCoroutineImmediately(function()
       while isAuctionHouseOpen and Object.hasEntries(tasks) do
         for itemID, __ in pairs(tasks) do
           local itemKey = { itemID = itemID }
