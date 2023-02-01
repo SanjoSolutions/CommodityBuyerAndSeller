@@ -195,6 +195,8 @@ function _.runLoop()
   if not isLoopRunning then
     isLoopRunning = true
 
+    print('Commodity buyer and seller process has started.')
+
     local isAuctionHouseOpen = AuctionHouseFrame:IsShown()
 
     local onAuctionHouseShowListener = Events.listenForEvent('AUCTION_HOUSE_SHOW', function()
@@ -290,6 +292,8 @@ function _.runLoop()
       onAuctionHouseShowListener:stopListening()
       onAuctionHouseClosedListener:stopListening()
       isLoopRunning = false
+
+      print('Commodity buyer and seller process has stopped.')
     end)
   end
 end
