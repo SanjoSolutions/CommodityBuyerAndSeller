@@ -210,6 +210,10 @@ function _.runLoop()
     Coroutine.runAsCoroutineImmediately(function()
       while isAuctionHouseOpen do
         for itemID, __ in pairs(tasks) do
+          if not isAuctionHouseOpen then
+            break
+          end
+
           local itemKey = { itemID = itemID }
           C_AuctionHouse.SendSearchQuery(
             itemKey,
@@ -225,6 +229,11 @@ function _.runLoop()
                 return true
               end
             end, 3)
+
+          if not isAuctionHouseOpen then
+            break
+          end
+
           if event == 'AUCTION_HOUSE_SHOW_ERROR' and argument1 == 10 then
             Events.waitForEvent('AUCTION_HOUSE_THROTTLED_SYSTEM_READY')
           end
