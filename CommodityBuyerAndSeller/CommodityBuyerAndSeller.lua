@@ -20,18 +20,22 @@ local purchaseTasks = {}
 --- @param minimumSellPricePerUnit number The minimum sell price per unit.
 function CommodityBuyerAndSeller.buyAndSell(itemID, maximumUnitPriceToBuyFor, maximumTotalQuantityToPutIntoAuctionHouse,
   maximumQuantityToPutIntoAuctionHouseAtATime, minimumSellPricePerUnit)
-  _.setBuyTask(itemID, maximumTotalQuantityToPutIntoAuctionHouse, maximumQuantityToPutIntoAuctionHouseAtATime,
-    minimumSellPricePerUnit)
-  _.setSellTask(itemID, maximumUnitPriceToBuyFor)
-  _.runLoop()
+  _.doIfIsCommodityOrShowInfoOtherwise(itemID, function()
+    _.setBuyTask(itemID, maximumTotalQuantityToPutIntoAuctionHouse, maximumQuantityToPutIntoAuctionHouseAtATime,
+      minimumSellPricePerUnit)
+    _.setSellTask(itemID, maximumUnitPriceToBuyFor)
+    _.runLoop()
+  end)
 end
 
 --- Adds a buy task for an item.
 --- @param itemID number The item ID.
 --- @param maximumUnitPriceToBuyFor number The maximum unit price to buy for in gold.
 function CommodityBuyerAndSeller.buy(itemID, maximumUnitPriceToBuyFor)
-  _.setSellTask(itemID, maximumUnitPriceToBuyFor)
-  _.runLoop()
+  _.doIfIsCommodityOrShowInfoOtherwise(itemID, function()
+    _.setSellTask(itemID, maximumUnitPriceToBuyFor)
+    _.runLoop()
+  end)
 end
 
 --- Adds a sell task for an item.
@@ -41,26 +45,22 @@ end
 --- @param minimumSellPricePerUnit number The minimum sell price per unit.
 function CommodityBuyerAndSeller.sell(itemID, maximumTotalQuantityToPutIntoAuctionHouse,
   maximumQuantityToPutIntoAuctionHouseAtATime, minimumSellPricePerUnit)
-  _.setBuyTask(itemID, maximumTotalQuantityToPutIntoAuctionHouse, maximumQuantityToPutIntoAuctionHouseAtATime,
-    minimumSellPricePerUnit)
-  _.runLoop()
+  _.doIfIsCommodityOrShowInfoOtherwise(itemID, function()
+    _.setBuyTask(itemID, maximumTotalQuantityToPutIntoAuctionHouse, maximumQuantityToPutIntoAuctionHouseAtATime,
+      minimumSellPricePerUnit)
+    _.runLoop()
+  end)
 end
 
 --- Cancel auctions which are estimated to run out.
 function CommodityBuyerAndSeller.cancelAuctions()
-  Coroutine.runAsCoroutineImmediately(function()
-    _.cancelAuctions()
+  if _.isAuctionHouseOpen() then
+    Coroutine.runAsCoroutineImmediately(function()
+      _.cancelAuctions()
 
-    print('Auctions have been cancelled.')
-  end)
-end
-
---- Returns the item ID of an item.
---- @param itemIdentifier string | number An item identifier. Can be an item name or item link. If it's an item name, it seems required that the item was in the bags in the session.
---- @return number The item ID.
-function CommodityBuyerAndSeller.retrieveItemID(itemIdentifier)
-  local itemID = GetItemInfoInstant(itemIdentifier)
-  return itemID
+      print('Auctions have been cancelled.')
+    end)
+  end
 end
 
 CommodityBuyerAndSeller.thread = nil
@@ -84,16 +84,24 @@ local sorts = {
 }
 
 function _.cancelAuctions()
+  if not C_AuctionHouse.HasFullOwnedAuctionResults() then
+    C_AuctionHouse.QueryOwnedAuctions(g_auctionHouseSortsBySearchContext[AuctionHouseSearchContext.AllAuctions])
+    Events.waitForEventCondition('OWNED_AUCTIONS_UPDATED', function ()
+      return C_AuctionHouse.HasFullOwnedAuctionResults()
+    end)
+  end
+
   local auctions = C_AuctionHouse.GetOwnedAuctions()
   local itemIDs = Set.create()
   Array.forEach(auctions, function(auction)
     local itemID = auction.itemKey.itemID
-    itemIDs:add(itemID)
+    if _.isCommodityItem(itemID) then
+      itemIDs:add(itemID)
+    end
   end)
 
   for itemID in itemIDs:iterator() do
-    local amountSoldPerDay = TSM_API.GetCustomPriceValue('dbregionsoldperday',
-      'i:' .. itemID) -- TODO: Add item level for items with different item levels
+    local amountSoldPerDay = TSM_API.GetCustomPriceValue('dbregionsoldperday', 'i:' .. itemID)
     if amountSoldPerDay then
       local itemKey = { itemID = itemID }
       C_AuctionHouse.SendSearchQuery(
@@ -411,4 +419,36 @@ function _.loadItem(itemID)
 
     coroutine.yield()
   end
+end
+
+function _.isCommodityItem(itemIdentifier)
+  local classID, subclassID = select(6, GetItemInfoInstant(itemIdentifier))
+  return (
+    classID == Enum.ItemClass.Consumable or
+      classID == Enum.ItemClass.Gem or
+      classID == Enum.ItemClass.Tradegoods or
+      classID == Enum.ItemClass.ItemEnhancement or
+      classID == Enum.ItemClass.Questitem or
+      (classID == Enum.ItemClass.Miscellaneous and subclassID ~= Enum.ItemMiscellaneousSubclass.Mount) or
+      classID == Enum.ItemClass.Glyph or
+      classID == Enum.ItemClass.Key
+  )
+end
+
+function _.doIfIsCommodityOrShowInfoOtherwise(itemID, fn)
+  if _.isCommodityItem(itemID) then
+    fn()
+  else
+    _.showInfoThatItemSeemsToBeOfAnotherClassThanCommodities(itemID)
+  end
+end
+
+function _.showInfoThatItemSeemsToBeOfAnotherClassThanCommodities(itemID)
+  _.loadItem(itemID)
+  local itemLink = select(2, GetItemInfo(itemID))
+  print('Commodity buyer and seller currently only supports commodity items. ' .. itemLink .. ' (' .. itemID .. ') seems to be of another class.')
+end
+
+function _.isAuctionHouseOpen()
+	return AuctionHouseFrame:IsShown()
 end
