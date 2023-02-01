@@ -1,7 +1,6 @@
 {
   "type": "module",
-  "version": "1.0.0",
   "dependencies": {
-    "@sanjo/toc": "./unnamed/packages/toc/"
+    "@sanjo/add-on-builder": "./add-on-builder/"
   }
 }

@@ -1,16 +1,6 @@
 CommodityBuyerAndSeller = {}
 
-BINDING_NAME_COMMODITY_BUYER_AND_SELLER_CONFIRM_BUTTON = 'Commodity Buyer and Seller: Confirm'
-
 local _ = {}
-
-local INFINITY = 1 / 0
-
-local tasks = {}
-
-local remainingQuantitiesToSell = {}
-local sellTasks = {}
-local purchaseTasks = {}
 
 --- Adds a buy and sell task for an item.
 --- @param itemID number The item ID.
@@ -18,8 +8,13 @@ local purchaseTasks = {}
 --- @param maximumTotalQuantityToPutIntoAuctionHouse number The maximum total quantity to put into the auction house.
 --- @param maximumQuantityToPutIntoAuctionHouseAtATime number The maximum quantity to put into the auction house at a time.
 --- @param minimumSellPricePerUnit number The minimum sell price per unit.
-function CommodityBuyerAndSeller.buyAndSell(itemID, maximumUnitPriceToBuyFor, maximumTotalQuantityToPutIntoAuctionHouse,
-  maximumQuantityToPutIntoAuctionHouseAtATime, minimumSellPricePerUnit)
+function CommodityBuyerAndSeller.buyAndSell(
+  itemID,
+  maximumUnitPriceToBuyFor,
+  maximumTotalQuantityToPutIntoAuctionHouse,
+  maximumQuantityToPutIntoAuctionHouseAtATime,
+  minimumSellPricePerUnit
+)
   _.doIfIsCommodityOrShowInfoOtherwise(itemID, function()
     _.setBuyTask(itemID, maximumTotalQuantityToPutIntoAuctionHouse, maximumQuantityToPutIntoAuctionHouseAtATime,
       minimumSellPricePerUnit)
@@ -43,8 +38,12 @@ end
 --- @param maximumTotalQuantityToPutIntoAuctionHouse number The maximum total quantity to put into the auction house.
 --- @param maximumQuantityToPutIntoAuctionHouseAtATime number The maximum quantity to put into the auction house at a time.
 --- @param minimumSellPricePerUnit number The minimum sell price per unit.
-function CommodityBuyerAndSeller.sell(itemID, maximumTotalQuantityToPutIntoAuctionHouse,
-  maximumQuantityToPutIntoAuctionHouseAtATime, minimumSellPricePerUnit)
+function CommodityBuyerAndSeller.sell(
+  itemID,
+  maximumTotalQuantityToPutIntoAuctionHouse,
+  maximumQuantityToPutIntoAuctionHouseAtATime,
+  minimumSellPricePerUnit
+)
   _.doIfIsCommodityOrShowInfoOtherwise(itemID, function()
     _.setBuyTask(itemID, maximumTotalQuantityToPutIntoAuctionHouse, maximumQuantityToPutIntoAuctionHouseAtATime,
       minimumSellPricePerUnit)
@@ -62,6 +61,14 @@ function CommodityBuyerAndSeller.cancelAuctions()
     end)
   end
 end
+
+BINDING_NAME_COMMODITY_BUYER_AND_SELLER_CONFIRM_BUTTON = 'Commodity Buyer and Seller: Confirm'
+
+local tasks = {}
+
+local remainingQuantitiesToSell = {}
+local sellTasks = {}
+local purchaseTasks = {}
 
 CommodityBuyerAndSeller.thread = nil
 
@@ -86,7 +93,7 @@ local sorts = {
 function _.cancelAuctions()
   if not C_AuctionHouse.HasFullOwnedAuctionResults() then
     C_AuctionHouse.QueryOwnedAuctions(g_auctionHouseSortsBySearchContext[AuctionHouseSearchContext.AllAuctions])
-    Events.waitForEventCondition('OWNED_AUCTIONS_UPDATED', function ()
+    Events.waitForEventCondition('OWNED_AUCTIONS_UPDATED', function()
       return C_AuctionHouse.HasFullOwnedAuctionResults()
     end)
   end
@@ -463,5 +470,5 @@ function _.showInfoThatItemSeemsToBeOfAnotherClassThanCommodities(itemID)
 end
 
 function _.isAuctionHouseOpen()
-	return AuctionHouseFrame:IsShown()
+  return AuctionHouseFrame:IsShown()
 end
