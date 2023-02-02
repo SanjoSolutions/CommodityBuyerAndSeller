@@ -4,4 +4,9 @@
       CommodityBuyerAndSeller.confirm()
     end
   </Binding>
+  <Binding name="COMMODITY_BUYER_AND_SELLER_STOP" runOnUp="true" category="ADDONS">
+    if keystate == 'down' then
+      CommodityBuyerAndSeller.stop()
+    end
+  </Binding>
 </Bindings>

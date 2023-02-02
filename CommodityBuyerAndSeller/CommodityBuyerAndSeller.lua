@@ -62,7 +62,11 @@ function CommodityBuyerAndSeller.cancelAuctions()
   end
 end
 
-BINDING_NAME_COMMODITY_BUYER_AND_SELLER_CONFIRM_BUTTON = 'Commodity Buyer and Seller: Confirm'
+do
+  local prefix = 'Commodity Buyer and Seller: '
+  BINDING_NAME_COMMODITY_BUYER_AND_SELLER_CONFIRM_BUTTON = prefix .. 'Confirm'
+  BINDING_NAME_COMMODITY_BUYER_AND_SELLER_STOP = prefix .. 'Stop'
+end
 
 local tasks = {}
 
@@ -71,15 +75,31 @@ local sellTasks = {}
 local purchaseTasks = {}
 
 CommodityBuyerAndSeller.thread = nil
+CommodityBuyerAndSeller.isEnabled = false
 
 local confirmButton
 
+--- Confirms the action.
+--- Can be done via button click or key press.
 function CommodityBuyerAndSeller.confirm()
   confirmButton:Hide()
   if CommodityBuyerAndSeller.thread then
     local thread = CommodityBuyerAndSeller.thread
     CommodityBuyerAndSeller.thread = nil
-    Coroutine.resumeWithShowingError(thread)
+    Coroutine.resumeWithShowingError(thread, true)
+  end
+end
+
+--- Stops the process.
+function CommodityBuyerAndSeller.stop()
+  CommodityBuyerAndSeller.isEnabled = false
+  if confirmButton:IsShown() then
+    confirmButton:Hide()
+    if CommodityBuyerAndSeller.thread then
+      local thread = CommodityBuyerAndSeller.thread
+      CommodityBuyerAndSeller.thread = nil
+      Coroutine.resumeWithShowingError(thread, false)
+    end
   end
 end
 
@@ -146,11 +166,12 @@ function _.cancelAuctions()
               _.loadItem(result.itemID)
               local itemLink = select(2, GetItemInfo(result.itemID))
               print('Cancelling ' .. result.numOwnerItems .. ' x ' .. itemLink .. '.')
-              _.showConfirmButton()
-              C_AuctionHouse.CancelAuction(result.auctionID)
-              Events.waitForEventCondition('AUCTION_CANCELED', function(self, event, auctionID)
-                return auctionID == result.auctionID
-              end)
+              if _.showConfirmButton() then
+                C_AuctionHouse.CancelAuction(result.auctionID)
+                Events.waitForEventCondition('AUCTION_CANCELED', function(self, event, auctionID)
+                  return auctionID == result.auctionID
+                end)
+              end
             end
           end
           quantity = quantity + result.quantity
@@ -200,6 +221,7 @@ local isLoopRunning = false
 
 function _.runLoop()
   if not isLoopRunning then
+    CommodityBuyerAndSeller.isEnabled = true
     isLoopRunning = true
 
     print('Commodity buyer and seller process has started.')
@@ -214,10 +236,14 @@ function _.runLoop()
       isAuctionHouseOpen = false
     end)
 
+    local function keepRunning()
+      return isAuctionHouseOpen and CommodityBuyerAndSeller.isEnabled
+    end
+
     Coroutine.runAsCoroutineImmediately(function()
-      while isAuctionHouseOpen do
+      while keepRunning() do
         for itemID, __ in pairs(tasks) do
-          if not isAuctionHouseOpen then
+          if not keepRunning() then
             break
           end
 
@@ -237,7 +263,7 @@ function _.runLoop()
               end
             end, 3)
 
-          if not isAuctionHouseOpen then
+          if not keepRunning() then
             break
           end
 
@@ -369,18 +395,19 @@ function _.workThroughSellTasks()
       -- TODO: Does it work if the item is distributed over multiple slots?
       local itemLink = C_Item.GetItemLink(item)
       print('Trying to put in ' .. quantity .. ' x ' .. itemLink .. ' (each for ' .. GetMoneyString(unitPrice) .. ').')
-      _.showConfirmButton()
-      local requiresConfirmation = C_AuctionHouse.PostCommodity(item, duration, quantity, unitPrice)
-      if requiresConfirmation then
-        C_AuctionHouse.ConfirmPostCommodity(item, duration, quantity, unitPrice)
-      end
-      -- TODO: Events for error?
-      local wasSuccessful = Events.waitForEvent('AUCTION_HOUSE_AUCTION_CREATED', 3)
-      if wasSuccessful then
-        print('Have put in ' .. quantity .. ' x ' .. itemLink .. ' (each for ' .. GetMoneyString(unitPrice) .. ').')
-        remainingQuantitiesToSell[itemID] = math.max(remainingQuantitiesToSell[itemID] - quantity, 0)
-      else
-        print('Error putting in ' .. quantity .. ' x ' .. itemLink .. '.')
+      if _.showConfirmButton() then
+        local requiresConfirmation = C_AuctionHouse.PostCommodity(item, duration, quantity, unitPrice)
+        if requiresConfirmation then
+          C_AuctionHouse.ConfirmPostCommodity(item, duration, quantity, unitPrice)
+        end
+        -- TODO: Events for error?
+        local wasSuccessful = Events.waitForEvent('AUCTION_HOUSE_AUCTION_CREATED', 3)
+        if wasSuccessful then
+          print('Have put in ' .. quantity .. ' x ' .. itemLink .. ' (each for ' .. GetMoneyString(unitPrice) .. ').')
+          remainingQuantitiesToSell[itemID] = math.max(remainingQuantitiesToSell[itemID] - quantity, 0)
+        else
+          print('Error putting in ' .. quantity .. ' x ' .. itemLink .. '.')
+        end
       end
     end
   end
@@ -411,17 +438,18 @@ function _.workThroughPurchaseTasks()
     _.loadItem(itemID)
     local itemLink = select(2, GetItemInfo(itemID))
     print('Trying to buy ' .. quantity .. ' x ' .. itemLink .. ' (for a maximum unit price of ' .. GetMoneyString(maximumUnitPriceToBuyFor) .. ').')
-    _.showConfirmButton()
-    C_AuctionHouse.StartCommoditiesPurchase(itemID, quantity)
-    local wasSuccessful, event, unitPrice, totalPrice = Events.waitForOneOfEvents({ 'COMMODITY_PRICE_UPDATED', 'COMMODITY_PRICE_UNAVAILABLE' },
-      3)
-    if event == 'COMMODITY_PRICE_UPDATED' then
-      if unitPrice <= maximumUnitPriceToBuyFor then
-        C_AuctionHouse.ConfirmCommoditiesPurchase(itemID, quantity)
-        local wasSuccessful, event = Events.waitForOneOfEvents({ 'COMMODITY_PURCHASE_SUCCEEDED', 'COMMODITY_PURCHASE_FAILED' },
-          3)
-        if wasSuccessful and event == 'COMMODITY_PURCHASE_SUCCEEDED' then
-          print('Have bought ' .. quantity .. ' x ' .. itemLink .. ' (for a unit price of ' .. GetMoneyString(unitPrice) .. ').')
+    if _.showConfirmButton() then
+      C_AuctionHouse.StartCommoditiesPurchase(itemID, quantity)
+      local wasSuccessful, event, unitPrice, totalPrice = Events.waitForOneOfEvents({ 'COMMODITY_PRICE_UPDATED', 'COMMODITY_PRICE_UNAVAILABLE' },
+        3)
+      if event == 'COMMODITY_PRICE_UPDATED' then
+        if unitPrice <= maximumUnitPriceToBuyFor then
+          C_AuctionHouse.ConfirmCommoditiesPurchase(itemID, quantity)
+          local wasSuccessful, event = Events.waitForOneOfEvents({ 'COMMODITY_PURCHASE_SUCCEEDED', 'COMMODITY_PURCHASE_FAILED' },
+            3)
+          if wasSuccessful and event == 'COMMODITY_PURCHASE_SUCCEEDED' then
+            print('Have bought ' .. quantity .. ' x ' .. itemLink .. ' (for a unit price of ' .. GetMoneyString(unitPrice) .. ').')
+          end
         end
       end
     end
