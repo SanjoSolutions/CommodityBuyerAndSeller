@@ -27,6 +27,7 @@
     <mapping directory="$PROJECT_DIR$/AddOns/Tooltips" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/AddOns/Yielder" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/add-on-builder" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/add-on-builder/unnamed" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/build/Array" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/build/Bags" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/build/Boolean" vcs="Git" />
