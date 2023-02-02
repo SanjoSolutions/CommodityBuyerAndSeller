@@ -22,11 +22,11 @@
     <mapping directory="$PROJECT_DIR$/AddOns/Scheduling" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/AddOns/Serialization" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/AddOns/Set" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/AddOns/SpellCasting" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/AddOns/Stoppable" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/AddOns/String" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/AddOns/Tooltips" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/AddOns/Yielder" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/add-on-builder" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/build/Array" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/build/Bags" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/build/Boolean" vcs="Git" />
@@ -38,6 +38,5 @@
     <mapping directory="$PROJECT_DIR$/build/Function" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/build/Object" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/build/Set" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/unnamed" vcs="Git" />
   </component>
 </project>
