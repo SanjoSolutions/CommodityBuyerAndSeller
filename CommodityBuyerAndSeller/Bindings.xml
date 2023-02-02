@@ -1,5 +1,5 @@
 <Bindings>
-  <Binding name="COMMODITY_BUYER_AND_SELLER_CONFIRM_BUTTON" runOnUp="true" category="ADDONS">
+  <Binding name="COMMODITY_BUYER_AND_SELLER_CONFIRM_BUTTON" runOnUp="true" category="ADDONS" header="COMMODITY_BUYER_AND_SELLER">
     if keystate == 'down' then
       CommodityBuyerAndSeller.confirm()
     end

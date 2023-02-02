@@ -63,6 +63,7 @@ function CommodityBuyerAndSeller.cancelAuctions()
 end
 
 do
+  BINDING_HEADER_COMMODITY_BUYER_AND_SELLER = 'Commodity Buyer and Seller'
   local prefix = 'Commodity Buyer and Seller: '
   BINDING_NAME_COMMODITY_BUYER_AND_SELLER_CONFIRM_BUTTON = prefix .. 'Confirm'
   BINDING_NAME_COMMODITY_BUYER_AND_SELLER_STOP = prefix .. 'Stop'
