@@ -426,7 +426,8 @@ confirmButton:Hide()
 function _.showConfirmButton()
   confirmButton:Show()
   CommodityBuyerAndSeller.thread = coroutine.running()
-  coroutine.yield()
+  local continue = coroutine.yield()
+  return continue
 end
 
 function _.workThroughPurchaseTasks()
