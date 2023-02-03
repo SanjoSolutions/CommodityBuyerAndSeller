@@ -421,6 +421,7 @@ confirmButton:SetPoint('CENTER', 0, 0)
 confirmButton:SetScript('OnClick', function()
   CommodityBuyerAndSeller.confirm()
 end)
+confirmButton:SetFrameStrata('HIGH')
 confirmButton:Hide()
 
 function _.showConfirmButton()
