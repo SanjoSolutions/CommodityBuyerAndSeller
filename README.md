@@ -37,3 +37,7 @@ Open the auction house.
 Then run: `/run CommodityBuyerAndSellerData.doConfigured()` (if the add-on template has been used).
 
 This command can also be put into a macro.
+
+## Support
+
+You can support me on [Patreon](https://patreon.com/ModsforSims4726).
