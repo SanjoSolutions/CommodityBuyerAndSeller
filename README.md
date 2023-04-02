@@ -40,4 +40,4 @@ This command can also be put into a macro.
 
 ## Support
 
-You can support me on [Patreon](https://patreon.com/user?u=91123368).
+You can support me on [Patreon](https://www.patreon.com/addons_by_sanjo).
