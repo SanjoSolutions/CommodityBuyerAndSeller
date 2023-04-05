@@ -1,6 +1,0 @@
-[submodule "AddOns"]
-	path = AddOns
-	url = git@github.com:SanjoSolutions/AddOns.git
-[submodule "add-on-builder"]
-	path = add-on-builder
-	url = git@github.com:SanjoSolutions/add-on-builder.git
