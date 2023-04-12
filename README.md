@@ -1,5 +1,7 @@
 # Commodities Buyer and Seller
 
+An add-on for buying and selling commodities in the auction house. This can help players to increase their efficiency.
+
 ## Features
 
 * Buying low price commodities.
