@@ -22,6 +22,8 @@ It's also possible to bind a key and press the key instead of clicking the butto
 
 Download the [latest release](https://github.com/SanjoSolutions/CommodityBuyerAndSeller/releases) and extract the folders into the AddOns folder.
 
+The add-on is also available on [CurseForge](https://www.curseforge.com/wow/addons/commodities-buyer-and-seller/files).
+
 ### Configuring what to buy and sell
 
 What is bought and sold can be configured by calling APIs with an additional add-on that the user can provide.
