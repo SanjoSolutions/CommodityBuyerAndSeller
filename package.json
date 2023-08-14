@@ -1,0 +1,10 @@
+{
+  "name": "CommodityBuyerAndSeller",
+  "dependencies": {
+    "Library": "SanjoSolutions/LuaLibrary#v0.4.0",
+    "Events": "SanjoSolutions/LuaEvents#v1.1.0",
+    "Coroutine": "SanjoSolutions/LuaCoroutine#v1.1.0",
+    "Bags": "SanjoSolutions/LuaBags#v1.1.0",
+    "Array": "SanjoSolutions/LuaArray#v1.1.0"
+  }
+}
